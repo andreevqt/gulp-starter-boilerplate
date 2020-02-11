@@ -1,0 +1,36 @@
+{
+  "name": "gulp-starter",
+  "version": "1.0.0",
+  "description": "Gulp starter boilerplate for beginners",
+  "main": "index.js",
+  "scripts": {
+    "css": "gulp css",
+    "js": "gulp js",
+    "html": "gulp html",
+    "vendor": "gulp vendor",
+    "clean": "gulp clean",
+    "build": "gulp build",
+    "images": "gulp images",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "browser-sync": "^2.26.7",
+    "del": "^5.1.0",
+    "gulp": "^4.0.2",
+    "gulp-autoprefixer": "^7.0.1",
+    "gulp-clean-css": "^4.2.0",
+    "gulp-plumber": "^1.2.1",
+    "gulp-pug": "^4.0.1",
+    "gulp-rename": "^2.0.0",
+    "gulp-sass": "^4.0.2",
+    "gulp-uglify": "^3.0.2",
+    "merge-stream": "^2.0.0",
+    "node-sass": "^4.13.1"
+  },
+  "dependencies": {
+    "jquery": "^3.4.1"
+  }
+}
