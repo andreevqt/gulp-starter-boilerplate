@@ -15,13 +15,21 @@ const buffer = require("vinyl-buffer")
 const imagemin = require("gulp-imagemin");
 const through = require("through2");
 const svgSprite = require("gulp-svg-sprite");
+const webpack = require("webpack-stream");
+const webpackConfig = require("./webpack.config");
 
 const defaults = {
+  // destination folder
   dist: "./dist",
+  // if set to true - ignores minify js
   useWebpack: false,
+  // Should compile css sprites ?
   pngSprites: false,
+  // shourl docmpile png sprites ?
   svgSprites: false,
+  // should minify Css?
   minifyCss: true,
+  // shoulrd minify Js?
   minifyJs: true
 }
 
@@ -73,6 +81,15 @@ const css = () => {
 
 const js = () => {
   const dest = config.dist + "/js";
+
+  if (config.useWebpack) {
+    return gulp
+      .src("./src/js/app.js")
+      .pipe(plumber())
+      .pipe(webpack(webpackConfig))
+      .pipe(gulp.dest(dest));
+  }
+
   let stream = gulp
     .src("./src/js/**/*.js")
     .pipe(plumber());
@@ -185,6 +202,8 @@ const watch = () => {
 }
 
 // Tasks
+
+// complex tasks
 const sprites = gulp.parallel(pngSprites, svgSprites);
 const build = gulp.series(clean, gulp.parallel(vendor, images, sprites), gulp.parallel(css, js, html));
 
@@ -209,7 +228,7 @@ exports.vendor = vendor;
 // copy images
 exports.images = images;
 
-// complex tasks
+// build tas
 exports.build = build;
 
 // watch
