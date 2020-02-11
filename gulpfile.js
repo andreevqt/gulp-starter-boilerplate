@@ -6,10 +6,21 @@ const uglify = require("gulp-uglify");
 const rename = require("gulp-rename");
 const pug = require("gulp-pug");
 const merge = require("merge-stream");
-const config = require("./config");
+const userConfig = require("./config");
 const del = require("del");
 const autoprefixer = require("gulp-autoprefixer");
 const browsersync = require("browser-sync");
+
+const defaults = {
+  dist: "./dist",
+  useWebpack: false,
+  pngSprites: false,
+  svgSprites: false,
+  minifyCss: true,
+  minifyJs: true
+}
+
+const config = { ...userConfig, ...defaults };
 
 // sass compiler
 sass.compiler = require("node-sass");
@@ -20,7 +31,7 @@ const clean = () => {
 
 const css = () => {
   const dest = config.dist + "/css";
-  return gulp
+  let stream = gulp
     .src("./src/scss/**/*.scss")
     .pipe(plumber())
     // sass
@@ -32,29 +43,39 @@ const css = () => {
     .pipe(autoprefixer({
       cascade: false
     }))
-    // copy unminified css
+
+  if (config.minifyCss) {
+    stream = stream
+      // copy unminified css
+      .pipe(gulp.dest(dest))
+      .pipe(cleanCss())
+      .pipe(rename({
+        suffix: ".min"
+      }))
+  }
+
+  return stream
     .pipe(gulp.dest(dest))
-    .pipe(rename({
-      suffix: ".min"
-    }))
-    // minify
-    .pipe(cleanCss())
-    .pipe(gulp.dest(dest))
-    .pipe(browsersync.stream())
+    .pipe(browsersync.stream());
 }
 
 const js = () => {
   const dest = config.dist + "/js";
-  return gulp
+  let stream = gulp
     .src("./src/js/**/*.js")
-    .pipe(plumber())
+    .pipe(plumber());
+
+  if (config.minifyJs) {
+    stream = stream
+      // copy unminified js
+      .pipe(gulp.dest(dest))
+      .pipe(uglify())
+      .pipe(rename({ suffix: ".min" }))
+  }
+
+  return stream
     .pipe(gulp.dest(dest))
-    .pipe(uglify())
-    .pipe(rename({
-      suffix: ".min"
-    }))
-    .pipe(gulp.dest(dest))
-    .pipe(browsersync.stream())
+    .pipe(browsersync.stream());
 }
 
 const images = () => {

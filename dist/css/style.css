@@ -1,5 +1,0 @@
-body {
-  transform: translateX(-300px);
-  -webkit-animation: hello 0.3s;
-  animation: hello 0.3s;
-}
