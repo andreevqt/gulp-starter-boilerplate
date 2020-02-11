@@ -9,9 +9,10 @@
     "html": "gulp html",
     "vendor": "gulp vendor",
     "clean": "gulp clean",
-    "build": "gulp build",
     "images": "gulp images",
     "sprites": "gulp sprites",
+    "build": "gulp build",
+    "prod": "gulp prod",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

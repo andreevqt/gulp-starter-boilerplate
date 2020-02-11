@@ -25,11 +25,11 @@ const defaults = {
   useWebpack: false,
   // Should compile css sprites ?
   pngSprites: false,
-  // shourl docmpile png sprites ?
+  // Should docmpile png sprites ?
   svgSprites: false,
-  // should minify Css?
+  // Should minify Css?
   minifyCss: true,
-  // shoulrd minify Js?
+  // Should minify Js?
   minifyJs: true
 }
 
@@ -79,39 +79,46 @@ const css = () => {
     .pipe(browsersync.stream());
 }
 
-const js = () => {
-  const dest = config.dist + "/js";
+const js = (mode = "none") => {
+  return () => {
+    const dest = config.dist + "/js";
 
-  if (config.useWebpack) {
-    return gulp
-      .src("./src/js/app.js")
-      .pipe(plumber())
-      .pipe(webpack(webpackConfig))
-      .pipe(gulp.dest(dest));
-  }
+    if (config.useWebpack) {
+      const options = {
+        mode,
+        devtool: (mode !== "production" ? "source-map" : false)
+      };
 
-  let stream = gulp
-    .src("./src/js/**/*.js")
-    .pipe(plumber());
+      return gulp
+        .src("./src/js/app.js")
+        .pipe(plumber())
+        .pipe(webpack({ ...options, ...webpackConfig }))
+        .pipe(gulp.dest(dest));
+    }
 
-  if (config.minifyJs) {
-    stream = stream
-      // copy unminified js
+    let stream = gulp
+      .src("./src/js/**/*.js")
+      .pipe(plumber());
+
+    if (config.minifyJs) {
+      stream = stream
+        // copy unminified js
+        .pipe(gulp.dest(dest))
+        .pipe(uglify())
+        .pipe(rename({ suffix: ".min" }));
+    }
+
+    return stream
       .pipe(gulp.dest(dest))
-      .pipe(uglify())
-      .pipe(rename({ suffix: ".min" }))
+      .pipe(browsersync.stream());
   }
-
-  return stream
-    .pipe(gulp.dest(dest))
-    .pipe(browsersync.stream());
 }
 
 const images = () => {
   const dest = config.dist + "/images"
   return gulp
     .src("./src/images/*")
-    .pipe(gulp.dest(dest))
+    .pipe(gulp.dest(dest));
 }
 
 const vendor = () => {
@@ -121,9 +128,9 @@ const vendor = () => {
       "./node_modules/jquery/dist/*",
       "!./node_modules/jquery/dist/core.js",
     ])
-    .pipe(gulp.dest(dest))
+    .pipe(gulp.dest(dest));
 
-  return merge(jquery)
+  return merge(jquery);
 }
 
 const browserSync = (done) => {
@@ -148,7 +155,7 @@ const html = () => {
     .pipe(plumber())
     .pipe(pug())
     .pipe(gulp.dest(dest))
-    .pipe(browsersync.stream())
+    .pipe(browsersync.stream());
 }
 
 const pngSprites = () => {
@@ -166,7 +173,7 @@ const pngSprites = () => {
   const imgStream = spriteData.img
     .pipe(buffer())
     .pipe(imagemin())
-    .pipe(gulp.dest("./images"))
+    .pipe(gulp.dest("./images"));
 
   const cssStream = spriteData.css
     .pipe(gulp.dest("./src/scss"))
@@ -205,7 +212,8 @@ const watch = () => {
 
 // complex tasks
 const sprites = gulp.parallel(pngSprites, svgSprites);
-const build = gulp.series(clean, gulp.parallel(vendor, images, sprites), gulp.parallel(css, js, html));
+const build = gulp.series(clean, gulp.parallel(vendor, images, sprites), gulp.parallel(css, js(), html));
+const prod = gulp.series(clean, gulp.parallel(vendor, images, sprites), gulp.parallel(css, js("production"), html));
 
 // sprites 
 exports.sprites = sprites;
@@ -214,7 +222,7 @@ exports.sprites = sprites;
 exports.css = css;
 
 // js
-exports.js = js;
+exports.js = js();
 
 //pug
 exports.html = html;
@@ -231,5 +239,6 @@ exports.images = images;
 // build tas
 exports.build = build;
 
+exports.prod = prod;
 // watch
 exports.watch = gulp.series(build, gulp.parallel(watch, browserSync));

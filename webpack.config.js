@@ -2,7 +2,7 @@ const path = require("path");
 
 module.exports = {
   entry:{
-    app: "./src/js/app.js"
+    app: "./src/js/app.js",
   },
   module: {
     rules: [
@@ -13,7 +13,6 @@ module.exports = {
       }
     ]
   },
-  devtool: "source-maps",
   output: {
     path: path.resolve(__dirname, "dist"),
     publicPath: '/',
