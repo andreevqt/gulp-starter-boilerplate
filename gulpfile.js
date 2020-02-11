@@ -17,6 +17,8 @@ const through = require("through2");
 const svgSprite = require("gulp-svg-sprite");
 const webpack = require("webpack-stream");
 const webpackConfig = require("./webpack.config");
+const gulpZip = require("gulp-zip");
+const moment = require("moment");
 
 const defaults = {
   // destination folder
@@ -202,6 +204,22 @@ const svgSprites = () => {
     .pipe(gulp.dest("./images"));
 
 }
+
+const zip = () => {
+  const date = moment().format("YYYY-MM-DD-HH-SS");
+  return gulp
+    .src(config.dist + '/**/*')
+    .pipe(gulpZip(`${date}.zip`))
+    .pipe(gulp.dest(config.dist));
+
+  //    del([config.dest + '/*', "!" + config.dest + '/*.zip'])
+
+
+  return merge(
+    stream,
+  );
+}
+
 const watch = () => {
   gulp.watch("./src/scss/**/*.scss");
   gulp.watch("./src/js/**/*.js");
@@ -212,8 +230,23 @@ const watch = () => {
 
 // complex tasks
 const sprites = gulp.parallel(pngSprites, svgSprites);
-const build = gulp.series(clean, gulp.parallel(vendor, images, sprites), gulp.parallel(css, js(), html));
-const prod = gulp.series(clean, gulp.parallel(vendor, images, sprites), gulp.parallel(css, js("production"), html));
+
+const build = gulp.series(
+  clean,
+  gulp.parallel(vendor, images, sprites),
+  gulp.parallel(css, js(), html)
+);
+
+const prod = gulp.series(
+  clean,
+  gulp.parallel(vendor, images, sprites),
+  gulp.parallel(
+    css,
+    js("production"),
+    html,
+  ),
+  zip,
+  () => del([config.dist + '/**/*', "!" + config.dist + '/*.zip']));
 
 // sprites 
 exports.sprites = sprites;
@@ -236,9 +269,11 @@ exports.vendor = vendor;
 // copy images
 exports.images = images;
 
-// build tas
+// build 
 exports.build = build;
 
+// production build
 exports.prod = prod;
+
 // watch
 exports.watch = gulp.series(build, gulp.parallel(watch, browserSync));

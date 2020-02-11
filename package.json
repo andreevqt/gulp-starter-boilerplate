@@ -4,16 +4,10 @@
   "description": "Gulp starter boilerplate for beginners",
   "main": "index.js",
   "scripts": {
-    "css": "gulp css",
-    "js": "gulp js",
-    "html": "gulp html",
-    "vendor": "gulp vendor",
     "clean": "gulp clean",
-    "images": "gulp images",
-    "sprites": "gulp sprites",
     "build": "gulp build",
     "prod": "gulp prod",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "watch": "gulp watch"
   },
   "keywords": [],
   "author": "",
@@ -34,8 +28,10 @@
     "gulp-sass": "^4.0.2",
     "gulp-svg-sprite": "^1.5.0",
     "gulp-uglify": "^3.0.2",
+    "gulp-zip": "^5.0.1",
     "gulp.spritesmith": "^6.11.0",
     "merge-stream": "^2.0.0",
+    "moment": "^2.24.0",
     "node-sass": "^4.13.1",
     "through2": "^3.0.1",
     "vinyl-buffer": "^1.0.1",
