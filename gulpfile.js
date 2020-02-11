@@ -90,7 +90,7 @@ const js = (mode = "none") => {
       };
 
       return gulp
-        .src("./src/js/app.js")
+        .src(".")
         .pipe(plumber())
         .pipe(webpack({ ...options, ...webpackConfig }))
         .pipe(gulp.dest(dest));
