@@ -211,13 +211,6 @@ const zip = () => {
     .src(config.dist + '/**/*')
     .pipe(gulpZip(`${date}.zip`))
     .pipe(gulp.dest(config.dist));
-
-  //    del([config.dest + '/*', "!" + config.dest + '/*.zip'])
-
-
-  return merge(
-    stream,
-  );
 }
 
 const watch = () => {
