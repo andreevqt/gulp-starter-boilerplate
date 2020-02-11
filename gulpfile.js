@@ -10,6 +10,11 @@ const userConfig = require("./config");
 const del = require("del");
 const autoprefixer = require("gulp-autoprefixer");
 const browsersync = require("browser-sync");
+const spritesmith = require("gulp.spritesmith");
+const buffer = require("vinyl-buffer")
+const imagemin = require("gulp-imagemin");
+const through = require("through2");
+const svgSprite = require("gulp-svg-sprite");
 
 const defaults = {
   dist: "./dist",
@@ -20,10 +25,17 @@ const defaults = {
   minifyJs: true
 }
 
-const config = { ...userConfig, ...defaults };
+const config = { ...defaults, ...userConfig };
 
 // sass compiler
 sass.compiler = require("node-sass");
+
+const empty = () => {
+  const th = through.obj((file, enc, cb) => {
+    cb(null, file)
+  });
+  return gulp.src(".").pipe(th);
+}
 
 const clean = () => {
   return del([config.dist]);
@@ -107,12 +119,10 @@ const browserSync = (done) => {
   done();
 }
 
-
 const browserSyncReload = (done) => {
   browsersync.reload();
   done();
 }
-
 
 const html = () => {
   const dest = config.dist;
@@ -121,19 +131,65 @@ const html = () => {
     .pipe(plumber())
     .pipe(pug())
     .pipe(gulp.dest(dest))
+    .pipe(browsersync.stream())
 }
 
+const pngSprites = () => {
+  if (!config.pngSprites) {
+    return empty();
+  }
 
+  const spriteData = gulp
+    .src("./sprites/png/**/*.png")
+    .pipe(spritesmith({
+      imgName: "sprite.png",
+      cssName: "_sprite.scss",
+    }));
+
+  const imgStream = spriteData.img
+    .pipe(buffer())
+    .pipe(imagemin())
+    .pipe(gulp.dest("./images"))
+
+  const cssStream = spriteData.css
+    .pipe(gulp.dest("./src/scss"))
+
+  return merge(imgStream, cssStream);
+}
+
+const svgSprites = () => {
+  if (!config.svgSprites) {
+    return empty();
+  }
+
+  return gulp.src("./sprites/svg/**/*.svg")
+    .pipe(svgSprite({
+      shape: {
+        dimension: {
+        }
+      },
+      mode: {
+        defs: {
+          dest: "./",
+          sprite: "./sprite.svg",
+        }
+      }
+    }))
+    .pipe(gulp.dest("./images"));
+
+}
 const watch = () => {
   gulp.watch("./src/scss/**/*.scss");
   gulp.watch("./src/js/**/*.js");
   gulp.watch("./src/pug/**/*.pug");
 }
 
-
 // Tasks
+const sprites = gulp.parallel(pngSprites, svgSprites);
+const build = gulp.series(clean, gulp.parallel(vendor, images, sprites), gulp.parallel(css, js, html));
 
-const build = gulp.series(clean, gulp.parallel(vendor, images), gulp.parallel(css, js, html));
+// sprites 
+exports.sprites = sprites;
 
 // css
 exports.css = css;
