@@ -9,7 +9,7 @@ const merge = require("merge-stream");
 const userConfig = require("./config");
 const del = require("del");
 const autoprefixer = require("gulp-autoprefixer");
-const browsersync = require("browser-sync");
+const browsersync = require("browser-sync").create();
 const spritesmith = require("gulp.spritesmith");
 const buffer = require("vinyl-buffer")
 const imagemin = require("gulp-imagemin");
@@ -36,9 +36,6 @@ const defaults = {
 }
 
 const config = { ...defaults, ...userConfig };
-
-// sass compiler
-sass.compiler = require("node-sass");
 
 const empty = () => {
   const th = through.obj((file, enc, cb) => {
@@ -70,6 +67,7 @@ const css = () => {
     stream = stream
       // copy unminified css
       .pipe(gulp.dest(dest))
+      .pipe(browsersync.stream())
       .pipe(cleanCss())
       .pipe(rename({
         suffix: ".min"
@@ -95,7 +93,8 @@ const js = (mode = "none") => {
         .src(".")
         .pipe(plumber())
         .pipe(webpack({ ...options, ...webpackConfig }))
-        .pipe(gulp.dest(dest));
+        .pipe(gulp.dest(dest))
+        .pipe(browsersync.stream());
     }
 
     let stream = gulp
@@ -119,7 +118,7 @@ const js = (mode = "none") => {
 const images = () => {
   const dest = config.dist + "/images"
   return gulp
-    .src("./src/images/*")
+    .src("./images/*")
     .pipe(gulp.dest(dest));
 }
 
@@ -140,7 +139,7 @@ const browserSync = (done) => {
     server: {
       baseDir: config.dist
     },
-    port: 8000
+    port: 3000
   });
   done();
 }
@@ -214,9 +213,9 @@ const zip = () => {
 }
 
 const watch = () => {
-  gulp.watch("./src/scss/**/*.scss");
-  gulp.watch("./src/js/**/*.js");
-  gulp.watch("./src/pug/**/*.pug");
+  gulp.watch("./src/scss/**/*.scss", css);
+  gulp.watch("./src/js/**/*.js", js());
+  gulp.watch("./src/pug/**/*.pug", html);
 }
 
 // Tasks
