@@ -6,8 +6,8 @@ Helps you to automate some common tasks:
  * minify js and css
  * bundle js (uses webpack)
  * archive dist
- * compile svg and png sprites
- * compile Pug templates
+ * svg and png sprites assembly
+ * Pug templates compilation
 
 ## Usage
 
@@ -15,10 +15,10 @@ Helps you to automate some common tasks:
 
 ```sh
 # Install globally
-npm install gulp-starter -g
+npm i gulp-starter -g
 
 # Create project
-gulp-starter <name>
+gulp-starter --create=<name>
 
 # install packages
 cd <name> 

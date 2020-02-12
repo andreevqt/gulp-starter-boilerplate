@@ -131,7 +131,7 @@ const vendor = () => {
   }
 
   const dest = config.dist + "/vendor";
-  const jquery = empty()
+  const jquery = empty();
 
   // replace with needed vendor libraries
 
