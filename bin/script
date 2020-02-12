@@ -1,0 +1,52 @@
+#!/usr/bin/env node
+const argv = require("yargs").argv;
+const fs = require("fs-extra");
+const path = require("path");
+const package = require("../package.json");
+const dependencies = package.dependencies;
+
+const directory = argv.create;
+if (!directory) {
+  console.log("Please specify directory");
+  return;
+}
+
+const outDir = path.resolve(process.cwd(), directory);
+const projectDir = path.resolve(__dirname, "../");
+
+const init = (settings) => {
+  const defaults = {
+    "name": "",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "MIT",
+  };
+
+  const packageJson = JSON.stringify({ ...defaults, ...settings }, null, 2);;
+  fs.outputFileSync(`${outDir}/package.json`, packageJson);
+}
+
+if (fs.existsSync(directory)) {
+  console.log("Directory already exists");
+  return
+};
+
+init({
+  name: path.parse(directory).name,
+  dependencies
+});
+
+fs.copy(`${projectDir}/config.js`, `${outDir}/config.js`);
+fs.copy(`${projectDir}/gulpfile.js`, `${outDir}/gulpfile.js`);
+fs.copy(`${projectDir}/webpack.config.js`, `${outDir}/webpack.config.js`);
+fs.copy(`${projectDir}/.gitignore`, `${outDir}/.gitignore`);
+fs.copy(`${projectDir}/babel.config.json`, `${outDir}/babel.config.js`);
+fs.copy(`${projectDir}/src`, `${outDir}/src`);
+fs.copy(`${projectDir}/sprites`, `${outDir}/sprites`);
+fs.copy(`${projectDir}/images`, `${outDir}/images`);
