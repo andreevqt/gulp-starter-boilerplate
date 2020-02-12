@@ -131,12 +131,16 @@ const vendor = () => {
   }
 
   const dest = config.dist + "/vendor";
-  const jquery = gulp
+  const jquery = empty()
+
+  // replace with needed vendor libraries
+
+  /* gulp
     .src([
       "./node_modules/jquery/dist/*",
       "!./node_modules/jquery/dist/core.js",
     ])
-    .pipe(gulp.dest(dest));
+    .pipe(gulp.dest(dest)); */
 
   return merge(jquery);
 }
