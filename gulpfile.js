@@ -236,26 +236,8 @@ const build = gulp.series(
   gulp.parallel(css, js, html)
 );
 
-// sprites 
-exports.sprites = sprites;
-
-// css
-exports.css = css;
-
-// js
-exports.js = js;
-
-//pug
-exports.html = html;
-
 // clean
 exports.clean = clean;
-
-// copy vendor files
-exports.vendor = vendor;
-
-// copy images
-exports.images = images;
 
 // build 
 exports.build = build;
