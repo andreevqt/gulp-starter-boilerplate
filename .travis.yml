@@ -6,4 +6,5 @@ before_install:
 script:
   - gulp-starter-boilerplate --create=dummy
   - cd dummy
+  - npm install
   - npm run build
