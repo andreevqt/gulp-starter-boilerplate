@@ -20,6 +20,8 @@ const webpackConfig = require("./webpack.config");
 const gulpZip = require("gulp-zip");
 const moment = require("moment");
 
+const argv = require("yargs").argv;
+
 const defaults = {
   // destination folder
   dist: "./dist",
@@ -79,46 +81,48 @@ const css = () => {
     .pipe(browsersync.stream());
 }
 
-const js = (mode = "none") => {
-  return () => {
-    const dest = config.dist + "/js";
+const js = () => {
 
-    if (config.useWebpack) {
-      const options = {
-        mode,
-        devtool: (mode !== "production" ? "source-map" : false)
-      };
+  const dest = config.dist + "/js";
 
-      return gulp
-        .src(".")
-        .pipe(plumber())
-        .pipe(webpack({ ...options, ...webpackConfig }))
-        .pipe(gulp.dest(dest))
-        .pipe(browsersync.stream());
-    }
+  const { mode } = argv;
 
-    let stream = gulp
-      .src("./src/js/**/*.js")
-      .pipe(plumber());
+  if (config.useWebpack) {
+    const options = {
+      mode,
+      devtool: (mode !== "production" ? "source-map" : false)
+    };
 
-    if (config.minifyJs) {
-      stream = stream
-        // copy unminified js
-        .pipe(gulp.dest(dest))
-        .pipe(uglify())
-        .pipe(rename({ suffix: ".min" }));
-    }
-
-    return stream
+    return gulp
+      .src(".")
+      .pipe(plumber())
+      .pipe(webpack({ ...options, ...webpackConfig }))
       .pipe(gulp.dest(dest))
       .pipe(browsersync.stream());
   }
+
+  let stream = gulp
+    .src("./src/js/**/*.js")
+    .pipe(plumber());
+
+  if (config.minifyJs) {
+    stream = stream
+      // copy unminified js
+      .pipe(gulp.dest(dest))
+      .pipe(uglify())
+      .pipe(rename({ suffix: ".min" }));
+  }
+
+  return stream
+    .pipe(gulp.dest(dest))
+    .pipe(browsersync.stream());
+
 }
 
 const images = () => {
-  const dest = config.dist + "/images"
+  const dest = config.dist + "/images";
   return gulp
-    .src("./images/*")
+    .src(["./images/**/*", "!./images/**/*.gitignore"])
     .pipe(gulp.dest(dest));
 }
 
@@ -214,7 +218,7 @@ const zip = () => {
 
 const watch = () => {
   gulp.watch("./src/scss/**/*.scss", css);
-  gulp.watch("./src/js/**/*.js", js());
+  gulp.watch("./src/js/**/*.js", js);
   gulp.watch("./src/pug/**/*.pug", html);
 }
 
@@ -226,20 +230,13 @@ const sprites = gulp.parallel(pngSprites, svgSprites);
 const build = gulp.series(
   clean,
   gulp.parallel(vendor, images, sprites),
-  gulp.parallel(css, js(), html)
+  gulp.parallel(css, js, html)
 );
 
 const prod = gulp.series(
-  clean,
-  gulp.parallel(vendor, images, sprites),
-  gulp.parallel(
-    css,
-    js("production"),
-    html,
-  ),
-  zip,
-  () => del([config.dist + '/**/*', "!" + config.dist + '/*.zip']));
-
+  build, zip
+)
+  
 // sprites 
 exports.sprites = sprites;
 
@@ -247,7 +244,7 @@ exports.sprites = sprites;
 exports.css = css;
 
 // js
-exports.js = js();
+exports.js = js;
 
 //pug
 exports.html = html;
@@ -266,6 +263,9 @@ exports.build = build;
 
 // production build
 exports.prod = prod;
+
+// zip 
+exports.zip = zip;
 
 // watch
 exports.watch = gulp.series(build, gulp.parallel(watch, browserSync));

@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "clean": "gulp clean",
-    "build": "gulp build",
-    "prod": "gulp prod",
-    "watch": "gulp watch"
+    "build": "gulp build --mode=development",
+    "prod": "gulp prod --mode=production",
+    "watch": "gulp watch --mode=development"
   },
   "keywords": [],
   "author": "",
@@ -35,7 +35,8 @@
     "node-sass": "^4.13.1",
     "through2": "^3.0.1",
     "vinyl-buffer": "^1.0.1",
-    "webpack-stream": "^5.2.1"
+    "webpack-stream": "^5.2.1",
+    "yargs": "^15.1.0"
   },
   "dependencies": {
     "jquery": "^3.4.1"
