@@ -1,6 +1,6 @@
 {
   "name": "gulp-starter-boilerplate",
-  "version": "0.0.1-alpha",
+  "version": "0.0.2-alpha",
   "description": "Gulp starter boilerplate for beginners",
   "main": "index.js",
   "bin": {
