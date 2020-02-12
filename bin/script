@@ -43,8 +43,10 @@ init({
 fs.copy(`${projectDir}/config.js`, `${outDir}/config.js`);
 fs.copy(`${projectDir}/gulpfile.js`, `${outDir}/gulpfile.js`);
 fs.copy(`${projectDir}/webpack.config.js`, `${outDir}/webpack.config.js`);
-fs.copy(`${projectDir}/.gitignore`, `${outDir}/.gitignore`);
-fs.copy(`${projectDir}/babel.config.json`, `${outDir}/babel.config.js`);
+// fs.copy(`${projectDir}/.gitignore`, `${outDir}/.gitignore`);
+fs.copy(`${projectDir}/babel.config.json`, `${outDir}/babel.config.json`);
 fs.copy(`${projectDir}/src`, `${outDir}/src`);
-fs.copy(`${projectDir}/sprites`, `${outDir}/sprites`);
-fs.copy(`${projectDir}/images`, `${outDir}/images`);
+fs.mkdirs(`${outDir}/sprites/png`);
+fs.mkdirs(`${outDir}/sprites/svg`);
+fs.mkdirs(`${outDir}/images`);
+// fs.copy(`${projectDir}/images`, `${outDir}/images`);
