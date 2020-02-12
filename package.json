@@ -6,7 +6,7 @@
   "scripts": {
     "clean": "gulp clean",
     "build": "gulp build --mode=development",
-    "prod": "gulp prod --mode=production",
+    "prod": "gulp build --mode=production",
     "watch": "gulp watch --mode=development"
   },
   "keywords": [],

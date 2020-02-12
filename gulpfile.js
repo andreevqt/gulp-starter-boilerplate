@@ -19,7 +19,6 @@ const webpack = require("webpack-stream");
 const webpackConfig = require("./webpack.config");
 const gulpZip = require("gulp-zip");
 const moment = require("moment");
-
 const argv = require("yargs").argv;
 
 const defaults = {
@@ -29,7 +28,7 @@ const defaults = {
   useWebpack: false,
   // Should compile css sprites ?
   pngSprites: false,
-  // Should docmpile png sprites ?
+  // Should compile png sprites ?
   svgSprites: false,
   // Should minify Css?
   minifyCss: true,
@@ -127,6 +126,10 @@ const images = () => {
 }
 
 const vendor = () => {
+  if (config.useWebpack) {
+    return empty();
+  }
+
   const dest = config.dist + "/vendor";
   const jquery = gulp
     .src([
@@ -233,10 +236,6 @@ const build = gulp.series(
   gulp.parallel(css, js, html)
 );
 
-const prod = gulp.series(
-  build, zip
-)
-  
 // sprites 
 exports.sprites = sprites;
 
@@ -260,9 +259,6 @@ exports.images = images;
 
 // build 
 exports.build = build;
-
-// production build
-exports.prod = prod;
 
 // zip 
 exports.zip = zip;
