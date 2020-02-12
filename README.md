@@ -17,10 +17,10 @@ Helps you to automate some common tasks:
 
 ```sh
 # Install globally
-npm i gulp-starter -g
+npm i gulp-starter-boilerplate -g
 
 # Create project
-gulp-starter --create=<name>
+gulp-starter-boilerplate --create=<name>
 
 # install packages
 cd <name> 
