@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/qprquo/gulp-starter.svg?branch=master)](https://travis-ci.org/qprquo/gulp-starter)
+
 # Gulp starter
 
 Simple gulp boilerplate for beginners. 
