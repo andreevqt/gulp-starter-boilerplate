@@ -49,5 +49,9 @@
     "vinyl-buffer": "^1.0.1",
     "webpack-stream": "^5.2.1",
     "yargs": "^15.1.0"
+  },
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/qprquo/gulp-starter-boilerplate.git"
   }
 }
