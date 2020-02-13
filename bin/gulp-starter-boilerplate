@@ -1,14 +1,22 @@
 #!/usr/bin/env node
-const argv = require("yargs").argv;
 const fs = require("fs-extra");
 const path = require("path");
-const package = require("../package.json");
+const config = require("../generator.config");
+
+const argv = require("yargs")
+  .usage("Usage: $0 --create=<dir> [options]")
+  .option("create", {
+    describe: "project directory"
+  })
+  .option("f", {
+    describe: "override directory if exists"
+  })
+  .demandOption(["create"])
+  .example("$0 --create=example_dir")
+  .help()
+  .argv;
 
 const directory = argv.create;
-if (!directory) {
-  console.log("Please specify directory");
-  return;
-}
 
 const outDir = path.resolve(process.cwd(), directory);
 const projectDir = path.resolve(__dirname, "../");
@@ -25,28 +33,26 @@ const init = (settings) => {
     "license": "MIT",
   };
 
-  const packageJson = JSON.stringify({ ...defaults, ...settings }, null, 2);;
+  const packageJson = JSON.stringify({ ...defaults, ...settings }, null, 2);
   fs.outputFileSync(`${outDir}/package.json`, packageJson);
 }
 
-if (fs.existsSync(directory)) {
+if (!argv.f && fs.existsSync(directory)) {
   console.log("Directory already exists");
   return
 };
 
 init({
   name: path.parse(directory).name,
-  dependencies: package.dependencies,
-  scripts: package.scripts,
+  dependencies: config.dependencies,
+  scripts: config.scripts,
 });
 
-fs.copy(`${projectDir}/config.js`, `${outDir}/config.js`);
+fs.outputFile(`${outDir}/config.js`);
 fs.copy(`${projectDir}/gulpfile.js`, `${outDir}/gulpfile.js`);
 fs.copy(`${projectDir}/webpack.config.js`, `${outDir}/webpack.config.js`);
-// fs.copy(`${projectDir}/.gitignore`, `${outDir}/.gitignore`);
 fs.copy(`${projectDir}/babel.config.json`, `${outDir}/babel.config.json`);
 fs.copy(`${projectDir}/src`, `${outDir}/src`);
 fs.mkdirs(`${outDir}/sprites/png`);
 fs.mkdirs(`${outDir}/sprites/svg`);
 fs.mkdirs(`${outDir}/images`);
-// fs.copy(`${projectDir}/images`, `${outDir}/images`);
