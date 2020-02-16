@@ -20,6 +20,8 @@ const webpackConfig = require("./webpack.config");
 const gulpZip = require("gulp-zip");
 const moment = require("moment");
 const argv = require("yargs").argv;
+const fs = require("fs");
+const childProcess = require("child_process");
 
 const defaults = {
   // destination folder
@@ -165,7 +167,12 @@ const html = () => {
   return gulp
     .src("./src/pug/pages/**/*.pug")
     .pipe(plumber())
-    .pipe(pug())
+    .pipe(pug({
+      pretty: true,
+      data: {
+        fs
+      }
+    }))
     .pipe(gulp.dest(dest))
     .pipe(browsersync.stream());
 }
@@ -200,26 +207,35 @@ const svgSprites = () => {
 
   return gulp.src("./sprites/svg/**/*.svg")
     .pipe(svgSprite({
-      shape: {
-        dimension: {
+      svg: {
+        rootAttributes: {
+          id: "svgSprite"
         }
       },
       mode: {
         defs: {
           dest: "./",
           sprite: "./sprite.svg",
+          render: {
+            scss: {
+              dest: "../src/scss/_svg-sprites.scss"
+            }
+          }
         }
       }
     }))
     .pipe(gulp.dest("./images"));
-
 }
 
 const zip = () => {
-  const date = moment().format("YYYY-MM-DD-HH-SS");
+
+  const hash = childProcess.execSync("git rev-parse HEAD")
+    .toString().trim().substring(0, 7);
+
+  /* const date = moment().format(`YYYY-MM-DD-HH-SS-${hash}`); */
   return gulp
     .src(config.dist + '/**/*')
-    .pipe(gulpZip(`${date}.zip`))
+    .pipe(gulpZip(`${hash}.zip`))
     .pipe(gulp.dest(config.dist));
 }
 
@@ -248,6 +264,12 @@ exports.build = build;
 
 // zip 
 exports.zip = zip;
+
+// images
+exports.images = images;
+
+// sprites 
+exports.sprites = sprites;
 
 // watch
 exports.watch = gulp.series(build, gulp.parallel(watch, browserSync));

@@ -24,10 +24,13 @@ module.exports = {
     "vinyl-buffer": "^1.0.1",
     "webpack-stream": "^5.2.1",
   },
-  scripts: {
+  "scripts": {
     "clean": "gulp clean",
     "build": "gulp build --mode=development",
     "prod": "gulp build --mode=production",
+    "images": "gulp images",
+    "sprites": "gulp sprites",
+    "zip": "gulp zip",
     "watch": "gulp watch --mode=development"
   }
 }
