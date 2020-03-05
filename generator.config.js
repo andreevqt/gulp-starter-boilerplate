@@ -1,5 +1,5 @@
 module.exports = {
-  dependencies: {
+  devDependencies: {
     "@babel/core": "^7.8.4",
     "@babel/preset-env": "^7.8.4",
     "babel-loader": "^8.0.6",
@@ -18,13 +18,12 @@ module.exports = {
     "gulp-zip": "^5.0.1",
     "gulp.spritesmith": "^6.11.0",
     "merge-stream": "^2.0.0",
-    "moment": "^2.24.0",
     "node-sass": "^4.13.1",
     "through2": "^3.0.1",
     "vinyl-buffer": "^1.0.1",
     "webpack-stream": "^5.2.1",
   },
-  "scripts": {
+  scripts: {
     "clean": "gulp clean",
     "build": "gulp build --mode=development",
     "prod": "gulp build --mode=production",
@@ -32,5 +31,10 @@ module.exports = {
     "sprites": "gulp sprites",
     "zip": "gulp zip",
     "watch": "gulp watch --mode=development"
+  },
+  babel: {
+    "presets": [
+      "@babel/preset-env"
+    ]
   }
 }

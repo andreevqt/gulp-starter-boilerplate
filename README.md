@@ -16,12 +16,14 @@ Helps you to automate some common tasks:
 ### Installation
 
 ```sh
-# Install globally
-npm i gulp-starter-boilerplate -g
-
+# Clone repo
+git clone https://github.com/qprquo/gulp-starter-boilerplate
+# cd to directory
+cd gulp-starter-boilerplate
+# link package
+npm link
 # Create project
 gulp-starter-boilerplate --create=<name>
-
 # install packages
 cd <name> 
 npm install
@@ -40,11 +42,9 @@ gulp watch
 
 ### Configuration
  
-Configuration file `config.js` can be found in a project root directory
-
 Following options are available:
 ```js
-module.exports = {
+const config = {
   // output directory
   dist: './dist/',
   // minify css and put files in `${config.dist}/css` directory

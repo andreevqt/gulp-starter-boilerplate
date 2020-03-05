@@ -6,7 +6,6 @@ const uglify = require("gulp-uglify");
 const rename = require("gulp-rename");
 const pug = require("gulp-pug");
 const merge = require("merge-stream");
-const userConfig = require("./config");
 const del = require("del");
 const autoprefixer = require("gulp-autoprefixer");
 const browsersync = require("browser-sync").create();
@@ -18,27 +17,24 @@ const svgSprite = require("gulp-svg-sprite");
 const webpack = require("webpack-stream");
 const webpackConfig = require("./webpack.config");
 const gulpZip = require("gulp-zip");
-const moment = require("moment");
 const argv = require("yargs").argv;
 const fs = require("fs");
 const childProcess = require("child_process");
 
-const defaults = {
+const config = {
   // destination folder
   dist: "./dist",
   // if set to true - ignores minify js
-  useWebpack: false,
+  useWebpack: true,
   // Should compile css sprites ?
   pngSprites: false,
   // Should compile png sprites ?
-  svgSprites: false,
+  svgSprites: true,
   // Should minify Css?
   minifyCss: true,
   // Should minify Js?
   minifyJs: true
-}
-
-const config = { ...defaults, ...userConfig };
+};
 
 const empty = () => {
   const th = through.obj((file, enc, cb) => {
@@ -83,9 +79,7 @@ const css = () => {
 }
 
 const js = () => {
-
   const dest = config.dist + "/js";
-
   const { mode } = argv;
 
   if (config.useWebpack) {
@@ -121,10 +115,15 @@ const js = () => {
 }
 
 const images = () => {
-  const dest = config.dist + "/images";
-  return gulp
-    .src(["./images/**/*", "!./images/**/*.gitignore"])
-    .pipe(gulp.dest(dest));
+  const filetypes = "{png,gif,jpg,jpeg}";
+  return merge(
+    gulp
+      .src([`./images/**/*.${filetypes}`, "!./images/**/*.gitignore"])
+      .pipe(gulp.dest(config.dist + "/images")),
+    gulp.
+      src(`*.${filetypes}`)
+      .pipe(gulp.dest(config.dist))
+  );
 }
 
 const vendor = () => {
@@ -228,11 +227,9 @@ const svgSprites = () => {
 }
 
 const zip = () => {
-
   const hash = childProcess.execSync("git rev-parse HEAD")
     .toString().trim().substring(0, 7);
 
-  /* const date = moment().format(`YYYY-MM-DD-HH-SS-${hash}`); */
   return gulp
     .src(config.dist + '/**/*')
     .pipe(gulpZip(`${hash}.zip`))
