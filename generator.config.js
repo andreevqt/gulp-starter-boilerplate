@@ -32,6 +32,10 @@ module.exports = {
     "zip": "gulp zip",
     "watch": "gulp watch --mode=development"
   },
+  dependencies: {
+    "bootstrap": "^4.4.1",
+    "jquery": "^3.4.1",
+  },
   babel: {
     "presets": [
       "@babel/preset-env"
